@@ -417,6 +417,7 @@ function buildBoundaryLayer(mode){
     layer.bindTooltip(safe(name||''),{sticky:true,opacity:.92});
     layer.on('click',e=>{
       L.DomEvent.stopPropagation(e);
+      if(typeof window.shinshuGuessHandler==='function' && window.shinshuGuessHandler(e.latlng))return;
       const {lat,lng}=e.latlng;
       L.popup({maxWidth:280}).setLatLng(e.latlng).setContent(areaHTML(lat,lng)).openOn(store.map);
     });
