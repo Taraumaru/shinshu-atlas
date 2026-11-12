@@ -160,7 +160,7 @@ function configureMap(){
   const parsed=new URL(location.href).searchParams;
   const lat=Number(parsed.get('lat')),lng=Number(parsed.get('lng')),z=Number(parsed.get('z'));
   const valid=Number.isFinite(lat)&&Number.isFinite(lng)&&Number.isFinite(z)&&lat>34&&lat<38&&lng>136&&lng<140&&z>=5&&z<=19;
-  store.map=L.map('map',{zoomControl:false,preferCanvas:true,zoomSnap:.5}).setView(valid?[lat,lng]:[INITIAL.lat,INITIAL.lng],valid?z:INITIAL.zoom);
+  store.map=L.map('map',{zoomControl:false,preferCanvas:true,zoomSnap:.5,minZoom:4,maxZoom:19}).setView(valid?[lat,lng]:[INITIAL.lat,INITIAL.lng],valid?z:INITIAL.zoom);
   L.control.zoom({position:'bottomleft'}).addTo(store.map);
   store.cluster=typeof L.markerClusterGroup==='function'?L.markerClusterGroup({chunkedLoading:true,chunkInterval:80,maxClusterRadius:47,disableClusteringAtZoom:16,showCoverageOnHover:false,spiderfyOnMaxZoom:true}):L.featureGroup();
   if(!store.cluster.zoomToShowLayer)store.cluster.zoomToShowLayer=(marker,callback)=>{store.map.setView(marker.getLatLng(),16);callback();};
