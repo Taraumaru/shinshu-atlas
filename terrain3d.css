@@ -1,0 +1,21 @@
+/* Desktop-first terrain mode: keeps the original 2D application intact. */
+#terrain-map{position:absolute;inset:0;z-index:2;display:none;background:#d9e7e4}
+.terrain-active #terrain-map{display:block}
+.terrain-active #map{visibility:hidden}
+.terrain-active .results,.terrain-active .map-counts,.terrain-active .map-lower{display:none}
+.terrain-active #load-pois{display:none}
+#terrain-toggle{white-space:nowrap;background:#194e65;color:#fff;border:0;border-radius:10px;padding:11px 16px;font-weight:800;min-height:42px;box-shadow:0 2px 12px #123b4b30}
+#terrain-toggle[aria-pressed="true"]{background:#197360}
+#terrain-controls{position:absolute;z-index:700;top:88px;right:22px;width:280px;padding:17px 18px;border-radius:14px;background:#ffffffed;box-shadow:0 8px 30px #0e2d3550;backdrop-filter:blur(10px)}
+#terrain-controls[hidden]{display:none!important}
+#terrain-controls h2{font-size:14px;margin:0 0 12px}
+#terrain-controls label{display:block;margin:12px 0 7px;font-weight:700;font-size:11px;color:#405664}
+#terrain-exaggeration{width:100%;accent-color:#176f60}
+#terrain-exaggeration-value{float:right;color:#176f60;font-weight:800}
+#terrain-reset{width:100%;margin-top:12px;border:1px solid #cce0dc;border-radius:8px;background:white;padding:9px;font-weight:750;color:#176f60}
+#terrain-status{font-size:10px;line-height:1.6;color:#657b7c;margin-top:12px}
+#terrain-controls .terrain-help{font-size:11px;color:#61767c;line-height:1.6;margin:8px 0}
+.terrain-active .map-top{pointer-events:none}
+.terrain-active .map-top button{pointer-events:auto}
+@media(max-width:1120px){#terrain-controls{top:85px;right:14px}}
+@media(max-width:760px){#terrain-controls{top:132px;right:11px;width:min(270px,calc(100vw - 22px))}#terrain-toggle{padding:9px 10px;min-height:42px;font-size:11px}.terrain-active .map-title{display:none}}
