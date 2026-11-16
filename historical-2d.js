@@ -31,6 +31,7 @@ function style(){
   lines:{type:'vector',url:'pmtiles://'+BASE+'line.pmtiles'},
   labels:{type:'geojson',data:empty()}
  },layers:[
+  {id:'history-2d-area',type:'fill',source:'polygons','source-layer':'polygon',filter:historicalFilter('polygon'),paint:{'fill-opacity':0}},
   {id:'history-2d-boundaries',type:'line',source:'lines','source-layer':'line',filter:historicalFilter('line'),paint:{'line-color':'#a15c25','line-width':['interpolate',['linear'],['zoom'],6,1.2,12,2],'line-dasharray':[3,2],'line-opacity':0.85}},
   {id:'history-2d-labels',type:'symbol',source:'labels',minzoom:7,layout:{'text-field':['get','name'],'text-font':['Noto Sans CJK JP Bold'],'text-size':['interpolate',['linear'],['zoom'],7,11,11,14],'text-padding':8,'text-allow-overlap':false},paint:{'text-color':'#7c3f10','text-halo-color':'#fff','text-halo-width':2.7}}
  ]};
@@ -87,6 +88,7 @@ function update(){
  $('historical-2d-map').style.display=on?'block':'none';
  if(!on)return;
  if(overlay.getLayer('history-2d-boundaries'))overlay.setFilter('history-2d-boundaries',historicalFilter('line'));
+ if(overlay.getLayer('history-2d-area'))overlay.setFilter('history-2d-area',historicalFilter('polygon'));
  lastKey='';overlay.getSource('labels')?.setData(empty());
  sync();scheduleLabels();
 }
