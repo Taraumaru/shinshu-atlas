@@ -20,7 +20,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./geoguessr.css?v=2.4">
-  <link rel="stylesheet" href="./intersections.css?v=2.5.1">\n  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.10.0/dist/maplibre-gl.css">\n  <link rel="stylesheet" href="./terrain3d.css?v=2.6">
+  <link rel="stylesheet" href="./intersections.css?v=2.5.1">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.10.0/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="./terrain3d.css?v=2.6">
 </head>
 <body>
   <div id="app">
@@ -118,7 +120,18 @@
     </aside>
 
     <main class="workspace">
-      <div id="map" role="application" aria-label="長野県の地図"></div>\n      <div id="terrain-map" role="application" aria-label="長野県3D地形"></div>\n      <section id="terrain-controls" aria-label="3D地形表示の操作" hidden>\n        <h2>3D地形ビュー</h2>\n        <p class="terrain-help">左ドラッグ：移動 / 右ドラッグ：回転・傾斜 / ホイール：拡大縮小</p>\n        <label for="terrain-exaggeration">高さの倍率 <output id="terrain-exaggeration-value">1.0×</output></label>\n        <input type="range" id="terrain-exaggeration" min="1" max="3" step="0.25" value="1">\n        <label for="terrain-background">背景地図</label>\n        <select id="terrain-background"><option value="gsi">地理院地図（標準）</option><option value="pale">地理院地図（淡色）</option><option value="photo">航空写真</option><option value="osm">OpenStreetMap</option></select>\n        <button type="button" id="terrain-reset">長野県全域に戻る</button>\n        <p id="terrain-status" role="status">3D地形を準備しています。</p>\n      </section>
+      <div id="map" role="application" aria-label="長野県の地図"></div>
+      <div id="terrain-map" role="application" aria-label="長野県3D地形"></div>
+      <section id="terrain-controls" aria-label="3D地形表示の操作" hidden>
+        <h2>3D地形ビュー</h2>
+        <p class="terrain-help">左ドラッグ：移動 / 右ドラッグ：回転・傾斜 / ホイール：拡大縮小</p>
+        <label for="terrain-exaggeration">高さの倍率 <output id="terrain-exaggeration-value">1.0×</output></label>
+        <input type="range" id="terrain-exaggeration" min="1" max="3" step="0.25" value="1">
+        <label for="terrain-background">背景地図</label>
+        <select id="terrain-background"><option value="gsi">地理院地図（標準）</option><option value="pale">地理院地図（淡色）</option><option value="photo">航空写真</option><option value="osm">OpenStreetMap</option></select>
+        <button type="button" id="terrain-reset">長野県全域に戻る</button>
+        <p id="terrain-status" role="status">3D地形を準備しています。</p>
+      </section>
       <div class="map-top">
         <button id="open-sidebar" class="icon-btn mobile-only map-menu-btn" aria-label="メニューを開く">☰</button>
         <div class="map-title"><strong>NAGANO PREFECTURE</strong><span>長野県全77市町村を探索</span></div>
@@ -147,6 +160,8 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js'"></script>
   <script src="./app.js?v=2.5.1" defer></script>
-  <script src="./geoguessr.js?v=2.5.1" defer></script>\n  <script src="https://unpkg.com/maplibre-gl@5.10.0/dist/maplibre-gl.js" defer></script>\n  <script src="./terrain3d.js?v=2.6.1" defer></script>
+  <script src="./geoguessr.js?v=2.5.1" defer></script>
+  <script src="https://unpkg.com/maplibre-gl@5.10.0/dist/maplibre-gl.js" defer></script>
+  <script src="./terrain3d-v267.js?build=20261116b" defer></script>
 </body>
 </html>
