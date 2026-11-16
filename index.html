@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="./intersections.css?v=2.5.1">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.10.0/dist/maplibre-gl.css">
   <link rel="stylesheet" href="./terrain3d.css?v=2.6">
+  <link rel="stylesheet" href="./place-names.css?v=2.7">
 </head>
 <body>
   <div id="app">
@@ -31,7 +32,7 @@
         <div class="brand-icon" aria-hidden="true">
           <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M3 25 12 8l5 9 5-12 7 20H3Z" fill="#DEF8F1"/><path d="m12 8 3 6-4 3-3-3 4-6Zm10-3 3 9-4-3-2 4-2-1 5-9Z" fill="#62C6AA"/></svg>
         </div>
-        <div><div class="brand-eyebrow">NAGANO OPEN MAP</div><h1>信州アトラス<span class="v-badge">v2.6</span></h1></div>
+        <div><div class="brand-eyebrow">NAGANO OPEN MAP</div><h1>信州アトラス<span class="v-badge">v2.7</span></h1></div>
         <button id="close-sidebar" class="icon-btn mobile-only" aria-label="メニューを閉じる">×</button>
       </div>
       <div class="sidebar-content">
@@ -95,6 +96,12 @@
           <div class="group-tools"><button type="button" id="all-categories">すべて選択</button><button type="button" id="clear-categories">すべて解除</button><span id="selected-count">0カテゴリ</span></div>
           <div id="category-groups"></div>
           <p class="small-note">「交差点名」を選ぶと、拡大率12以上で名前を青い標識として表示します。未取得の地点は「この範囲の施設を取得」から読み込んでください。</p>
+        </div>
+        <div class="panel-section">
+          <div class="section-heading"><span>地域・地区の名前</span><span class="mini-hint">ズームで自動切替</span></div>
+          <label class="place-option"><input id="place-detail" type="checkbox" checked> 大字・町名・集落・小地名を表示</label>
+          <p class="small-note">ズームに応じてOpenStreetMap登録地名を読み込みます。広域では名称の重複を防ぐため間引きます。旧市町村の全件収録・旧境界表示は未対応です。</p>
+          <p id="place-status" role="status">地名の読み込みを準備中</p>
         </div>
         <div class="panel-section">
           <div class="section-heading"><span>区域を重ねる</span><span class="mini-hint">境界をクリックで詳細</span></div>
@@ -162,6 +169,7 @@
   <script src="./app.js?v=2.5.1" defer></script>
   <script src="./geoguessr.js?v=2.5.1" defer></script>
   <script src="https://unpkg.com/maplibre-gl@5.10.0/dist/maplibre-gl.js" defer></script>
-  <script src="./terrain3d-v267.js?build=20261116b" defer></script>
+  <script src="./terrain3d-v267.js?build=20261116c" defer></script>
+  <script src="./place-names.js?v=2.7" defer></script>
 </body>
 </html>
