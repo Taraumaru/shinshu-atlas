@@ -115,7 +115,7 @@ function setup3D(map){
  if(!map3d.getSource('atlas-places'))map3d.addSource('atlas-places',{type:'geojson',data:geojson()});
  if(!map3d.getLayer('atlas-place-labels'))map3d.addLayer({
   id:'atlas-place-labels',type:'symbol',source:'atlas-places',
-  layout:{'text-field':['get','name'],'text-font':['Open Sans Regular','Arial Unicode MS Regular'],'text-size':['interpolate',['linear'],['zoom'],9,11,14,14],'text-allow-overlap':false,'text-padding':8,'text-anchor':'center','text-optional':true},
+  layout:{'text-field':['get','name'],'text-font':['Noto Sans CJK JP Regular'],'text-size':['interpolate',['linear'],['zoom'],9,11,14,14],'text-allow-overlap':false,'text-padding':8,'text-anchor':'center','text-optional':true},
   paint:{'text-color':'#153a42','text-halo-color':'#fff','text-halo-width':2.3}
  });
  update3D();
