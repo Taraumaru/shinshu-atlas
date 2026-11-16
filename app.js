@@ -251,6 +251,7 @@ function deduplicateIntersections(items){
   }
   return result;
 }
+function addMarkersToLayer(group,markers){if(typeof group.addLayers==='function')group.addLayers(markers);else for(const marker of markers)group.addLayer(marker);}
 function updateIntersectionLayer(){
   if(!store.map||!store.intersectionLabels||!store.intersectionCluster)return;
   store.intersectionLabels.clearLayers();
@@ -292,7 +293,7 @@ function renderPOIs(){
     marker.bindPopup(()=>popupFor(p),{maxWidth:320});
     intersectionMarkers.push(marker);
   }
-  store.intersectionCluster.addLayers(intersectionMarkers);
+  addMarkersToLayer(store.intersectionCluster,intersectionMarkers);
   // Present all locally loaded POIs (up to a safe per-browser rendering cap). CSV/GeoJSON exports are not capped.
   for(const p of activeFiltered.filter(p=>!isNamedIntersection(p)).slice(0,25000)){
     const c=classInfo(p);
@@ -301,7 +302,7 @@ function renderPOIs(){
     marker.bindPopup(()=>popupFor(p),{maxWidth:300});
     store.markers.set(p.key,marker);markers.push(marker);
   }
-  store.cluster.addLayers(markers);
+  addMarkersToLayer(store.cluster,markers);
   updateIntersectionLayer();
   el('total-poi-count').textContent=shortNum(store.points.size);
   updateMetrics();
