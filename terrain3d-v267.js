@@ -58,6 +58,7 @@ function onStyleReady(){
  ready=true;
  configureTerrain();
  addLayers();
+ document.dispatchEvent(new CustomEvent('shinshu-terrain-ready',{detail:{map:map3d}}));
  status('標高タイルを読み込み中。ドラッグで回転・傾斜できます。');
 }
 function bindPopup(){
@@ -97,7 +98,7 @@ async function activate(){
  status('3D地形を初期化しています…');
  try{
   await initialize();
-  map3d.resize();sync2Dto3D();refreshPOIs();
+  map3d.resize();sync2Dto3D();refreshPOIs();document.dispatchEvent(new Event('shinshu-terrain-activated'));
   status('3D地形を表示中。地形は実測標高由来、建物の3Dモデルは含みません。');
  }catch(e){
   console.error('[信州アトラス3D]',e);
@@ -114,6 +115,7 @@ function deactivate(){
  $('terrain-toggle').textContent='3D地形を表示';
  $('terrain-toggle').setAttribute('aria-pressed','false');
  $('terrain-controls').hidden=true;
+ document.dispatchEvent(new Event('shinshu-terrain-deactivated'));
  setTimeout(()=>store.map?.invalidateSize(),0);
 }
 function fitNagano(){
