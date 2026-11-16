@@ -20,12 +20,12 @@ function makeStyle(){
  },layers:[{id:'basemap',type:'raster',source:'basemap'}]};
 }
 function sync2Dto3D(){
- if(!map3d||!window.store?.map)return;
+ if(!map3d||!store?.map)return;
  const c=store.map.getCenter();
  map3d.jumpTo({center:[c.lng,c.lat],zoom:Math.max(5,store.map.getZoom()-0.2),pitch:62,bearing:0});
 }
 function sync3Dto2D(){
- if(!map3d||!window.store?.map)return;
+ if(!map3d||!store?.map)return;
  const c=map3d.getCenter();
  store.map.setView([c.lat,c.lng],Math.max(4,Math.min(19,map3d.getZoom())),{animate:false});
 }
