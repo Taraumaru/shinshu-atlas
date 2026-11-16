@@ -89,7 +89,7 @@ for(const d of PREFECTURAL_DISTRICTS)for(const name of d.names)PREF_BY_MUNI.set(
 
 const el = id => document.getElementById(id);
 const safe = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const normalizeSearch = value => {const v=String(value||'').normalize('NFKC').replace(/[\\s　]/g,'').toLowerCase();return v.length>3?v.replace(/(交差点|信号機|信号)$/,''):v;};
+const normalizeSearch = value => {const v=String(value||'').normalize('NFKC').replace(/[\s　]/g,'').toLowerCase();return v.length>3?v.replace(/(交差点|信号機|信号)$/,''):v;};
 const shortNum = n => Number(n).toLocaleString('ja-JP');
 const wait = ms => new Promise(resolve=>setTimeout(resolve,ms));
 const store = {points:new Map(), queries:new Map(), db:null, loading:false, abort:null, boundaryMode:'municipality', municipalities:null, districts:null, layers:{}, markers:new Map(), selected:new Set(DEFAULT_IDS), search:'', map:null, cluster:null, base:null, activeBase:'osm', seenLocal:false, intersectionCluster:null, intersectionLabels:null, intersectionRecords:[]};
