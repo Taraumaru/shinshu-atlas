@@ -35,6 +35,7 @@ const CATEGORY_GROUPS = [
     {id:'postoffice',name:'郵便局',icon:'📮',color:'#be6c50',selectors:['["amenity"="post_office"]']}
   ]},
   {name:'交通・インフラ',items:[
+    {id:'intersection',name:'交差点名',icon:'✚',color:'#166c9b',selectors:['["highway"="traffic_signals"]["name"]','["junction"]["name"]','["highway"="motorway_junction"]["name"]']},
     {id:'roadstation',name:'道の駅',icon:'🚩',color:'#b17a40',selectors:['["name"~"道の駅"]','["name:ja"~"道の駅"]']},
     {id:'railway',name:'鉄道駅',icon:'🚉',color:'#597baa',selectors:['["railway"~"^(station|halt)$"]']},
     {id:'bus',name:'バス停',icon:'🚌',color:'#639691',selectors:['["highway"="bus_stop"]']},
@@ -55,7 +56,7 @@ const CATEGORY_GROUPS = [
 ];
 const CATEGORIES = CATEGORY_GROUPS.flatMap(g=>g.items);
 const CATEGORY_BY_ID = Object.fromEntries(CATEGORIES.map(c=>[c.id,c]));
-const DEFAULT_IDS = ['convenience','fuel','school','roadstation','railway','peak'];
+const DEFAULT_IDS = ['intersection','convenience','fuel','school','roadstation','railway','peak'];
 
 // Official 23 district groupings, based on current municipalities, with seat counts as of 2026.
 const PREFECTURAL_DISTRICTS = [
@@ -90,7 +91,7 @@ const el = id => document.getElementById(id);
 const safe = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const shortNum = n => Number(n).toLocaleString('ja-JP');
 const wait = ms => new Promise(resolve=>setTimeout(resolve,ms));
-const store = {points:new Map(), queries:new Map(), db:null, loading:false, abort:null, boundaryMode:'municipality', municipalities:null, districts:null, layers:{}, markers:new Map(), selected:new Set(DEFAULT_IDS), search:'', map:null, cluster:null, base:null, activeBase:'osm', seenLocal:false};
+const store = {points:new Map(), queries:new Map(), db:null, loading:false, abort:null, boundaryMode:'municipality', municipalities:null, districts:null, layers:{}, markers:new Map(), selected:new Set(DEFAULT_IDS), search:'', map:null, cluster:null, base:null, activeBase:'osm', seenLocal:false, intersectionCluster:null, intersectionLabels:null, intersectionRecords:[]};
 
 function setStatus(message,state='normal'){
   el('global-status').textContent=message;
@@ -113,6 +114,7 @@ function categoriesFor(tags={}){
   if(tags.office==='government'||tags.amenity==='townhall')out.push('government');
   if(['police','fire_station'].includes(tags.amenity))out.push('police');
   if(tags.amenity==='post_office')out.push('postoffice');
+  if((tags.name||tags['name:ja'])&&(tags.highway==='traffic_signals'||tags.highway==='motorway_junction'||tags.junction==='yes'||tags.junction==='roundabout'))out.push('intersection');
   if((String(tags.name||'').includes('道の駅')||String(tags['name:ja']||'').includes('道の駅')) && tags.highway!=='bus_stop' && tags.public_transport!=='platform')out.push('roadstation');
   if(['station','halt'].includes(tags.railway))out.push('railway');
   if(tags.highway==='bus_stop')out.push('bus');
@@ -165,10 +167,12 @@ function configureMap(){
   store.cluster=typeof L.markerClusterGroup==='function'?L.markerClusterGroup({chunkedLoading:true,chunkInterval:80,maxClusterRadius:47,disableClusteringAtZoom:16,showCoverageOnHover:false,spiderfyOnMaxZoom:true}):L.featureGroup();
   if(!store.cluster.zoomToShowLayer)store.cluster.zoomToShowLayer=(marker,callback)=>{store.map.setView(marker.getLatLng(),16);callback();};
   store.map.addLayer(store.cluster);
+  store.intersectionCluster=typeof L.markerClusterGroup==='function'?L.markerClusterGroup({chunkedLoading:true,maxClusterRadius:42,disableClusteringAtZoom:13,showCoverageOnHover:false}):L.featureGroup();
+  store.intersectionLabels=L.layerGroup().addTo(store.map);
   setBase('osm');
-  store.map.on('moveend',()=>{updateMetrics();scheduleAutomaticLoad();});
+  store.map.on('moveend',()=>{updateMetrics();updateIntersectionLayer();scheduleAutomaticLoad();});
   store.map.on('click',e=>L.popup({maxWidth:280}).setLatLng(e.latlng).setContent(areaHTML(e.latlng.lat,e.latlng.lng)).openOn(store.map));
-  store.map.on('zoomend',()=>{el('map-hint-text').textContent=store.map.getZoom()<10?'この範囲の施設を取得できます。市町村まで拡大すると自動取得します':'地図を動かすと選択カテゴリの施設を自動取得します';});
+  store.map.on('zoomend',()=>{updateIntersectionLayer();el('map-hint-text').textContent=store.map.getZoom()<10?'この範囲の施設を取得できます。市町村まで拡大すると自動取得します':'地図を動かすと選択カテゴリの施設を自動取得します';});
 }
 function setBase(id){
   const layers={
@@ -225,13 +229,70 @@ function popupFor(p){
     (p.osmId?`<a href="${url}" target="_blank" rel="noopener">OSMで編集</a>`:'')+
     (website?`<a href="${safe(website)}" target="_blank" rel="noopener noreferrer">公式サイト</a>`:'')+'</div>';
 }
+
+// Named intersections use a separate label layer rather than ordinary POI pins.
+// Japan commonly records these under highway=traffic_signals + name.
+function intersectionName(p){return String(p.tags?.['name:ja']||p.tags?.name||'').trim();}
+function isNamedIntersection(p){return p.categoryIds?.includes('intersection')&&store.selected.has('intersection');}
+function deduplicateIntersections(items){
+  const result=[],cells=new Map(),step=.0012;
+  for(const p of items){
+    const name=intersectionName(p);if(!name)continue;
+    const ix=Math.floor(p.lng/step),iy=Math.floor(p.lat/step);
+    let duplicate=false;
+    for(let dx=-1;dx<=1&&!duplicate;dx++)for(let dy=-1;dy<=1&&!duplicate;dy++){
+      const existing=cells.get((ix+dx)+','+(iy+dy))||[];
+      duplicate=existing.some(q=>intersectionName(q)===name&&distanceKm(p,q)<.12);
+    }
+    if(duplicate)continue;
+    result.push(p);
+    const key=ix+','+iy;if(!cells.has(key))cells.set(key,[]);cells.get(key).push(p);
+  }
+  return result;
+}
+function updateIntersectionLayer(){
+  if(!store.map||!store.intersectionLabels||!store.intersectionCluster)return;
+  store.intersectionLabels.clearLayers();
+  const map=store.map,zoom=map.getZoom();
+  const named=store.intersectionRecords||[];
+  if(zoom<12){
+    if(!map.hasLayer(store.intersectionCluster))map.addLayer(store.intersectionCluster);
+    return;
+  }
+  if(map.hasLayer(store.intersectionCluster))map.removeLayer(store.intersectionCluster);
+  if(!store.selected.has('intersection'))return;
+  // Labels are viewport-only. Limiting them prevents heavy overlap on mobile.
+  const bounds=map.getBounds().pad(.05),limit=zoom>=15?350:zoom>=14?220:zoom>=13?140:80;
+  let count=0;
+  for(const p of named){
+    if(!bounds.contains([p.lat,p.lng]))continue;
+    const name=intersectionName(p);
+    if(!name)continue;
+    const label=L.divIcon({className:'named-intersection-label',
+      html:'<span class="intersection-sign"><span class="intersection-cross">＋</span>'+safe(name)+'</span>',
+      iconSize:[1,1],iconAnchor:[0,0],popupAnchor:[0,-25]});
+    const marker=L.marker([p.lat,p.lng],{icon:label,title:name,zIndexOffset:400,riseOnHover:true});
+    marker.bindPopup(()=>popupFor(p),{maxWidth:320});
+    store.intersectionLabels.addLayer(marker);
+    count++;if(count>=limit)break;
+  }
+}
+
 let activeFiltered=[];
 function renderPOIs(){
-  store.cluster.clearLayers();store.markers.clear();
+  store.cluster.clearLayers();store.markers.clear();store.intersectionCluster?.clearLayers();
   activeFiltered=[...store.points.values()].filter(p=>p.categoryIds?.some(id=>store.selected.has(id)) && (!store.search || [p.tags?.name,p.tags?.['name:ja'],p.tags?.brand,p.tags?.operator].some(s=>String(s||'').toLowerCase().includes(store.search.toLowerCase()))));
-  const markers=[];
+  const markers=[],intersectionMarkers=[];
+  store.intersectionRecords=deduplicateIntersections(activeFiltered.filter(isNamedIntersection));
+  // Keep named junctions separate for label rendering and clustered wide-area view.
+  for(const p of store.intersectionRecords.slice(0,25000)){
+    const marker=L.marker([p.lat,p.lng],{title:intersectionName(p),icon:L.divIcon({className:'intersection-small-icon',html:'<span>✚</span>',iconSize:[24,24],iconAnchor:[12,12]})});
+    marker.bindPopup(()=>popupFor(p),{maxWidth:320});
+    intersectionMarkers.push(marker);
+  }
+  store.intersectionCluster.addLayers(intersectionMarkers);
   // Present all locally loaded POIs (up to a safe per-browser rendering cap). CSV/GeoJSON exports are not capped.
-  for(const p of activeFiltered.slice(0,25000)){
+  for(const p of activeFiltered.filter(p=>!isNamedIntersection(p)).slice(0,25000)){
     const c=classInfo(p);
     const div=L.divIcon({html:`<div class="poi-pin" style="background:${c.color}"><span>${c.icon}</span></div>`,iconSize:[30,34],iconAnchor:[12,31],popupAnchor:[3,-27],className:'',});
     const marker=L.marker([p.lat,p.lng],{icon:div,title:p.tags?.['name:ja']||p.tags?.name||c.name});
@@ -239,6 +300,7 @@ function renderPOIs(){
     store.markers.set(p.key,marker);markers.push(marker);
   }
   store.cluster.addLayers(markers);
+  updateIntersectionLayer();
   el('total-poi-count').textContent=shortNum(store.points.size);
   updateMetrics();
 }
@@ -260,7 +322,7 @@ function updateMetrics(){
     detail.append(n,sub);
     const distance=document.createElement('span');distance.className='result-distance';distance.textContent=formatDistance(distanceKm(p,center));
     row.append(icon,detail,distance);
-    row.addEventListener('click',()=>{store.map.setView([p.lat,p.lng],Math.max(15,store.map.getZoom()));const marker=store.markers.get(p.key);if(marker)store.cluster.zoomToShowLayer(marker,()=>marker.openPopup());closeMobileSidebar();});
+    row.addEventListener('click',()=>{store.map.setView([p.lat,p.lng],Math.max(15,store.map.getZoom()));if(isNamedIntersection(p)){L.popup({maxWidth:320}).setLatLng([p.lat,p.lng]).setContent(popupFor(p)).openOn(store.map);}else{const marker=store.markers.get(p.key);if(marker)store.cluster.zoomToShowLayer(marker,()=>marker.openPopup());}closeMobileSidebar();});
     fragment.append(row);
   }
   if(!visible.length){const p=document.createElement('div');p.className='empty-results';p.textContent=store.search?'一致する施設はありません。別のキーワードを試してください。':'この表示範囲に読み込み済みの施設はありません。地図右上の「施設を取得」を押してください。';fragment.append(p);}
