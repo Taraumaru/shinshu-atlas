@@ -136,7 +136,7 @@ function setup(){
  // 2D controls can still modify downloaded data in the sidebar.
  $('category-groups')?.addEventListener('change',()=>setTimeout(refreshPOIs,100));
  window.addEventListener('resize',()=>{if(active&&map3d)map3d.resize();});
- window.shinshuTerrain={isActive:()=>active,refresh:refreshPOIs};
+ window.shinshuTerrain={isActive:()=>active,getMap:()=>map3d,refresh:refreshPOIs};
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
 })();
