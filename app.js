@@ -89,6 +89,7 @@ for(const d of PREFECTURAL_DISTRICTS)for(const name of d.names)PREF_BY_MUNI.set(
 
 const el = id => document.getElementById(id);
 const safe = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const normalizeSearch = value => {const v=String(value||'').normalize('NFKC').replace(/[\\s　]/g,'').toLowerCase();return v.length>3?v.replace(/(交差点|信号機|信号)$/,''):v;};
 const shortNum = n => Number(n).toLocaleString('ja-JP');
 const wait = ms => new Promise(resolve=>setTimeout(resolve,ms));
 const store = {points:new Map(), queries:new Map(), db:null, loading:false, abort:null, boundaryMode:'municipality', municipalities:null, districts:null, layers:{}, markers:new Map(), selected:new Set(DEFAULT_IDS), search:'', map:null, cluster:null, base:null, activeBase:'osm', seenLocal:false, intersectionCluster:null, intersectionLabels:null, intersectionRecords:[]};
@@ -281,7 +282,8 @@ function updateIntersectionLayer(){
 let activeFiltered=[];
 function renderPOIs(){
   store.cluster.clearLayers();store.markers.clear();store.intersectionCluster?.clearLayers();
-  activeFiltered=[...store.points.values()].filter(p=>p.categoryIds?.some(id=>store.selected.has(id)) && (!store.search || [p.tags?.name,p.tags?.['name:ja'],p.tags?.brand,p.tags?.operator].some(s=>String(s||'').toLowerCase().includes(store.search.toLowerCase()))));
+  const needle=normalizeSearch(store.search);
+  activeFiltered=[...store.points.values()].filter(p=>p.categoryIds?.some(id=>store.selected.has(id)) && (!store.search || !needle || [p.tags?.name,p.tags?.['name:ja'],p.tags?.brand,p.tags?.operator].some(s=>normalizeSearch(s).includes(needle))));
   const markers=[],intersectionMarkers=[];
   store.intersectionRecords=deduplicateIntersections(activeFiltered.filter(isNamedIntersection));
   // Keep named junctions separate for label rendering and clustered wide-area view.
@@ -542,7 +544,7 @@ function downloadBlob(data,name,type){const url=URL.createObjectURL(new Blob([da
 async function handleSearch(event){
   event.preventDefault();const q=el('search-input').value.trim();store.search=q;renderPOIs();
   if(!q)return;
-  const local=activeFiltered.find(p=>[p.tags?.name,p.tags?.['name:ja'],p.tags?.brand].some(v=>(v||'').includes(q)));
+  const local=activeFiltered.find(p=>[p.tags?.name,p.tags?.['name:ja'],p.tags?.brand].some(v=>normalizeSearch(v).includes(normalizeSearch(q))));
   if(local){store.map.setView([local.lat,local.lng],Math.max(14,store.map.getZoom()));const m=store.markers.get(local.key);if(m)store.cluster.zoomToShowLayer(m,()=>m.openPopup());return;}
   const muni=store.municipalities?.features.find(f=>municipalityName(f).includes(q));
   if(muni){store.map.fitBounds(L.geoJSON(muni).getBounds().pad(.04));setStatus(`${municipalityName(muni)}に移動しました`);return;}
