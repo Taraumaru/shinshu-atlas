@@ -3,11 +3,11 @@
   'use strict';
   const $=id=>document.getElementById(id);
   const presets={
-    signs:{ids:['roadstation','railway','bus','government','postoffice','school'],label:'地名・標識'},
+    signs:{ids:['intersection','roadstation','railway','bus','government','postoffice','school'],label:'地名・標識'},
     shops:{ids:['convenience','fuel','supermarket','drugstore','bank','restaurant'],label:'店舗・チェーン'},
     terrain:{ids:['peak','viewpoint','dam','waterfall','onsen','park'],label:'山・地形'},
     local:{ids:['school','railway','roadstation','shrine','library','hospital'],label:'地域の目印'},
-    all:{ids:['convenience','fuel','supermarket','drugstore','school','railway','bus','roadstation','peak','viewpoint','government','postoffice','dam','onsen','shrine'],label:'全ヒント'}
+    all:{ids:['intersection','convenience','fuel','supermarket','drugstore','school','railway','bus','roadstation','peak','viewpoint','government','postoffice','dam','onsen','shrine'],label:'全ヒント'}
   };
   const regions={
     north:{label:'北信',lat:36.76,lng:138.20,zoom:10},
@@ -126,7 +126,7 @@
       const stored=JSON.parse(storageGet('shinshu-gg-guess')||'null');
       if(stored&&Number.isFinite(stored.lat)&&Number.isFinite(stored.lng))putGuess(stored);
     }catch{}
-    feedback('道路標識・学校名・店名・山の名前などを手がかりに検索できます。');
+    feedback('交差点名・学校名・店名・山の名前などを手がかりに検索できます。');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
 })();
