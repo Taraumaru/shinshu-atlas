@@ -76,7 +76,7 @@ function initialize(){
  if(initPromise)return initPromise;
  initPromise=new Promise((resolve,reject)=>{
   if(typeof maplibregl==='undefined'){reject(new Error('3D地図ライブラリの読み込みに失敗しました'));return;}
-  if(!maplibregl.supported()){reject(new Error('ブラウザでWebGLが利用できません。ハードウェアアクセラレーションを確認してください'));return;}
+  if(typeof WebGLRenderingContext==='undefined' && typeof WebGL2RenderingContext==='undefined'){reject(new Error('WebGLが利用できません。ブラウザのハードウェアアクセラレーションを確認してください'));return;}
   const c=store.map.getCenter();
   try{
    map3d=new maplibregl.Map({container:'terrain-map',style:makeStyle(),center:[c.lng,c.lat],zoom:Math.max(5,store.map.getZoom()-0.2),pitch:62,bearing:0,maxPitch:85,antialias:true,attributionControl:true});
