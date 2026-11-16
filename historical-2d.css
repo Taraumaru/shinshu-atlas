@@ -1,0 +1,9 @@
+/* Transparent, non-interactive historic overlay above Leaflet markers and below UI */
+#historical-2d-map{position:absolute;inset:0;z-index:450;pointer-events:none!important;background:transparent!important}
+#historical-2d-map *{pointer-events:none!important}
+#historical-2d-map .maplibregl-canvas{background:transparent!important}
+.terrain-active #historical-2d-map{display:none!important}
+.history-2d-controls{margin-top:12px;padding-top:12px;border-top:1px solid #e5ebea}
+.history-2d-controls .field-label{margin-bottom:7px}
+.history-2d-controls .place-option{margin:8px 0}
+#historical-2d-status{margin-top:8px;font-size:10px;color:#778f92;line-height:1.5}
