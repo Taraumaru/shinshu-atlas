@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="./terrain3d.css?v=2.6">
   <link rel="stylesheet" href="./place-names.css?v=2.7">
   <link rel="stylesheet" href="./historical-municipalities.css?v=2.8">
+  <link rel="stylesheet" href="./historical-2d.css?v=3.1">
 </head>
 <body>
   <div id="app">
@@ -33,7 +34,7 @@
         <div class="brand-icon" aria-hidden="true">
           <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M3 25 12 8l5 9 5-12 7 20H3Z" fill="#DEF8F1"/><path d="m12 8 3 6-4 3-3-3 4-6Zm10-3 3 9-4-3-2 4-2-1 5-9Z" fill="#62C6AA"/></svg>
         </div>
-        <div><div class="brand-eyebrow">NAGANO OPEN MAP</div><h1>信州アトラス<span class="v-badge">v3.0</span></h1></div>
+        <div><div class="brand-eyebrow">NAGANO OPEN MAP</div><h1>信州アトラス<span class="v-badge">v3.1</span></h1></div>
         <button id="close-sidebar" class="icon-btn mobile-only" aria-label="メニューを閉じる">×</button>
       </div>
       <div class="sidebar-content">
@@ -103,6 +104,23 @@
           <label class="place-option"><input id="place-detail" type="checkbox" checked> 大字・町名・集落・小地名を表示</label>
           <p class="small-note">ズームに応じてOpenStreetMap登録地名を読み込みます。広域では名称の重複を防ぐため間引きます。旧市町村の全件収録・旧境界表示は未対応です。</p>
           <p id="place-status" role="status">地名の読み込みを準備中</p>
+          <div class="history-2d-controls">
+            <div class="section-heading"><span>旧市町村（2D地図）</span></div>
+            <label class="place-option"><input type="checkbox" id="historical-2d-enabled" checked> 旧市町村名・旧境界を表示</label>
+            <label class="field-label" for="historical-2d-date">表示する時点</label>
+            <select id="historical-2d-date">
+              <option value="1950-10-01">1950年</option>
+              <option value="1960-10-01">1960年</option>
+              <option value="1970-10-01">1970年</option>
+              <option value="1980-10-01">1980年</option>
+              <option value="1990-10-01">1990年</option>
+              <option value="2000-10-01" selected>2000年（平成の大合併前）</option>
+              <option value="2005-10-01">2005年</option>
+              <option value="2010-10-01">2010年</option>
+              <option value="2026-11-16">現在</option>
+            </select>
+            <p id="historical-2d-status">旧市町村データを準備中</p>
+          </div>
         </div>
         <div class="panel-section">
           <div class="section-heading"><span>区域を重ねる</span><span class="mini-hint">境界をクリックで詳細</span></div>
@@ -129,6 +147,7 @@
 
     <main class="workspace">
       <div id="map" role="application" aria-label="長野県の地図"></div>
+      <div id="historical-2d-map" aria-hidden="true"></div>
       <div id="terrain-map" role="application" aria-label="長野県3D地形"></div>
       <section id="terrain-controls" aria-label="3D地形表示の操作" hidden>
         <h2>3D地形ビュー</h2>
@@ -192,5 +211,6 @@
   <script src="./place-names.js?v=2.9" defer></script>
   <script src="https://unpkg.com/pmtiles@3.2.1/dist/pmtiles.js" defer></script>
   <script src="./historical-municipalities-v30.js?v=30" defer></script>
+  <script src="./historical-2d.js?v=3.1" defer></script>
 </body>
 </html>
