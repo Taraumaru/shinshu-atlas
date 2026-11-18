@@ -80,7 +80,7 @@ function initialize(){
   if(typeof WebGLRenderingContext==='undefined' && typeof WebGL2RenderingContext==='undefined'){reject(new Error('WebGLが利用できません。ブラウザのハードウェアアクセラレーションを確認してください'));return;}
   const c=store.map.getCenter();
   try{
-   map3d=new maplibregl.Map({container:'terrain-map',style:makeStyle(),center:[c.lng,c.lat],zoom:Math.max(5,store.map.getZoom()-0.2),pitch:62,bearing:0,maxPitch:85,antialias:true,attributionControl:true});
+   map3d=new maplibregl.Map({container:'terrain-map',style:makeStyle(),center:[c.lng,c.lat],zoom:Math.max(5,store.map.getZoom()-0.2),pitch:62,bearing:0,maxPitch:120,antialias:true,attributionControl:true});
    map3d.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'bottom-left');
    map3d.on('load',()=>{onStyleReady();bindPopup();resolve();});
    map3d.on('error',e=>{console.warn('[3D terrain]',e.error||e);if(!ready)status('一部の地形タイルが取得できません。通信環境を確認してください。');});
