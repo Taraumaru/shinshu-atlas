@@ -1,0 +1,15 @@
+/* Terrain observation point selection: desktop-first */
+#observer-panel{margin-top:12px;padding-top:13px;border-top:1px solid #d9e8e3}
+#observer-panel[hidden]{display:none!important}
+#observer-panel h3{font-size:12px;margin:0 0 8px}
+#observer-panel label{display:block;font-size:11px;margin:10px 0 6px;font-weight:750;color:#405c60}
+#observer-panel input[type=range]{width:100%;accent-color:#176f60}
+#observer-heading-value{float:right;color:#176f60;font-weight:800}
+#observer-panel .observer-actions{display:flex;gap:6px;margin-top:10px}
+#observer-panel button,#observer-start,#observer-pick{border:1px solid #cbdcd8;border-radius:8px;background:#fff;color:#176f60;font-weight:750;padding:9px 10px}
+#observer-start{background:#176f60;color:#fff}
+#observer-start:disabled{opacity:.5;cursor:not-allowed}
+#observer-start,#observer-pick{width:100%;margin-top:8px}
+#observer-panel .observer-actions button{flex:1}
+#observer-status,#observer-location,#observer-ground{font-size:10px;line-height:1.6;color:#657d82;margin:8px 0 0}
+#observer-direction{display:block}
