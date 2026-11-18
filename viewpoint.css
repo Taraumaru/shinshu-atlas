@@ -31,3 +31,10 @@
 .observer-active #observer-status{font-size:11px}
 .observer-active #observer-panel .observer-actions button{font-size:11px}
 @media(max-width:760px){.observer-active #terrain-controls{right:10px!important;bottom:10px!important;width:min(310px,calc(100vw - 20px))!important}}
+
+/* Street-view-style orientation and movement controls */
+.observer-move-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:10px}
+#observer-panel .observer-move-grid button{padding:8px 1px;font-size:11px}
+.observer-active #terrain-map .maplibregl-canvas{cursor:grab!important}
+.observer-active #terrain-map .maplibregl-canvas:active{cursor:grabbing!important}
+.observer-active #observer-panel .terrain-help{font-size:11px;color:#475d64}
