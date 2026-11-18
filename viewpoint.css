@@ -13,3 +13,21 @@
 #observer-panel .observer-actions button{flex:1}
 #observer-status,#observer-location,#observer-ground{font-size:10px;line-height:1.6;color:#657d82;margin:8px 0 0}
 #observer-direction{display:block}
+
+/* Observation mode: full map unobstructed and compact floating controls. */
+.observer-active #terrain-controls{top:auto!important;bottom:24px!important;right:24px!important;width:310px!important;padding:12px 16px!important;max-height:calc(100vh - 90px);overflow-y:auto;}
+.observer-active #terrain-controls>h2,
+.observer-active #terrain-controls>.terrain-help,
+.observer-active #terrain-controls>label,
+.observer-active #terrain-controls>#terrain-exaggeration,
+.observer-active #terrain-controls>#terrain-reset,
+.observer-active #terrain-controls>#old-municipality-panel,
+.observer-active #terrain-controls>#terrain-status{display:none!important}
+.observer-active #terrain-controls>#observer-panel{display:block!important;margin:0;padding:0;border:0}
+.observer-active .map-title,.observer-active .map-top .button-secondary{display:none!important}
+.observer-active .map-top{left:auto;right:24px;top:20px}
+.observer-active #observer-panel h3{font-size:15px;margin:0 0 10px}
+.observer-active #observer-panel label{font-size:12px;margin:12px 0 8px}
+.observer-active #observer-status{font-size:11px}
+.observer-active #observer-panel .observer-actions button{font-size:11px}
+@media(max-width:760px){.observer-active #terrain-controls{right:10px!important;bottom:10px!important;width:min(310px,calc(100vw - 20px))!important}}
