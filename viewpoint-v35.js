@@ -133,6 +133,8 @@ async function applyView(resample=false){
  }catch(error){
   if(token!==revision)return;
   observer=false;
+  document.body.classList.remove('observer-active');
+  restoreMapLabels(terrainMap);
   message('地上視点を表示できません: '+(error?.message||String(error)));
   console.error('[Shinshu Atlas viewpoint]',error);
  }
@@ -173,6 +175,11 @@ async function startView(){
 function endView(){
  ++revision;
  observer=false;
+ dragging=false;
+ if(terrainMap?.dragPan)terrainMap.dragPan.enable();
+ if(terrainMap?.dragRotate)terrainMap.dragRotate.enable();
+ document.body.classList.remove('observer-active');
+ restoreMapLabels(terrainMap);
  $('observer-panel').hidden=true;
  $('observer-ground').dataset.elevation='';
  if(terrainMap&&point&&window.shinshuTerrain?.isActive?.()){
