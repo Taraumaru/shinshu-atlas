@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="./place-names.css?v=2.7">
   <link rel="stylesheet" href="./historical-municipalities.css?v=2.8">
   <link rel="stylesheet" href="./historical-2d.css?v=3.1">
-  <link rel="stylesheet" href="./viewpoint.css?v=3.3">
+  <link rel="stylesheet" href="./viewpoint.css?v=3.5">
 </head>
 <body>
   <div id="app">
@@ -35,7 +35,7 @@
         <div class="brand-icon" aria-hidden="true">
           <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><path d="M3 25 12 8l5 9 5-12 7 20H3Z" fill="#DEF8F1"/><path d="m12 8 3 6-4 3-3-3 4-6Zm10-3 3 9-4-3-2 4-2-1 5-9Z" fill="#62C6AA"/></svg>
         </div>
-        <div><div class="brand-eyebrow">NAGANO OPEN MAP</div><h1>信州アトラス<span class="v-badge">v3.4</span></h1></div>
+        <div><div class="brand-eyebrow">NAGANO OPEN MAP</div><h1>信州アトラス<span class="v-badge">v3.5</span></h1></div>
         <button id="close-sidebar" class="icon-btn mobile-only" aria-label="メニューを閉じる">×</button>
       </div>
       <div class="sidebar-content">
@@ -134,8 +134,8 @@
         <div class="panel-section">
           <div class="section-heading"><span>区域を重ねる</span><span class="mini-hint">境界をクリックで詳細</span></div>
           <div id="boundary-modes" class="boundary-options" role="radiogroup" aria-label="行政・選挙区レイヤー">
-            <label><input type="radio" name="boundary" value="none"> なし</label>
-            <label><input type="radio" name="boundary" value="municipality" checked> 77市町村</label>
+            <label><input type="radio" name="boundary" value="none" checked> なし</label>
+            <label><input type="radio" name="boundary" value="municipality"> 77市町村</label>
             <label><input type="radio" name="boundary" value="national"> 衆議院5区</label>
             <label><input type="radio" name="boundary" value="prefectural"> 県議会23区</label>
           </div>
@@ -198,7 +198,19 @@
           <label for="observer-pitch">視線の角度 <span id="observer-pitch-value">12°下向き</span></label>
           <input type="range" id="observer-pitch" min="60" max="85" step="1" value="78">
           <p id="observer-ground" data-elevation="">地表標高: 読み込み前</p>
-          <p class="terrain-help">左右キーでも方角を15°ずつ変更できます。</p>
+          <p class="terrain-help">ドラッグで見回す / W・A・S・Dで移動 / 矢印キーで向きを変更</p>
+          <label for="observer-speed">移動距離</label>
+          <select id="observer-speed">
+            <option value="5">5m</option>
+            <option value="20" selected>20m</option>
+            <option value="100">100m</option>
+          </select>
+          <div class="observer-move-grid" aria-label="移動操作">
+            <button type="button" data-observer-move="forward">前進</button>
+            <button type="button" data-observer-move="left">左へ</button>
+            <button type="button" data-observer-move="back">後退</button>
+            <button type="button" data-observer-move="right">右へ</button>
+          </div>
           <div class="observer-actions">
             <button type="button" id="observer-north">北を向く</button>
             <button type="button" id="observer-exit">俯瞰表示に戻る</button>
@@ -233,7 +245,7 @@
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js'"></script>
-  <script src="./app.js?v=2.5.1" defer></script>
+  <script src="./app.js?v=3.5" defer></script>
   <script src="./geoguessr.js?v=2.5.1" defer></script>
   <script src="https://unpkg.com/maplibre-gl@5.10.0/dist/maplibre-gl.js" defer></script>
   <script src="./terrain3d-v29.js?v=29" defer></script>
@@ -241,6 +253,6 @@
   <script src="https://unpkg.com/pmtiles@3.2.1/dist/pmtiles.js" defer></script>
   <script src="./historical-municipalities-v30.js?v=30" defer></script>
   <script src="./historical-2d.js?v=3.1" defer></script>
-  <script src="./viewpoint.js?v=3.3" defer></script>
+  <script src="./viewpoint-v35.js?v=35" defer></script>
 </body>
 </html>
