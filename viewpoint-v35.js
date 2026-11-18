@@ -33,7 +33,7 @@ function pick(ll){
 function heading(){return Number($('observer-direction').value);}
 function height(){return Number($('observer-height').value);}
 function setHeading(v){$('observer-direction').value=String(((Math.round(v)%360)+360)%360);showHeading();}
-function setPitch(v){$('observer-pitch').value=String(Math.max(60,Math.min(85,Math.round(v))));showPitch();}
+function setPitch(v){$('observer-pitch').value=String(Math.max(60,Math.min(120,Math.round(v))));showPitch();}
 function moveObserver(forward,side){
  if(!observer||!point)return;
  const speed=Number($('observer-speed')?.value||20);
@@ -71,7 +71,7 @@ function bindStreetControls(map){
  canvas.addEventListener('lostpointercapture',end);
 }
 function pitch(){return Number($('observer-pitch')?.value||78);}
-function showPitch(){const x=$('observer-pitch-value');if(x)x.textContent=(90-pitch())+'°下向き';}
+function showPitch(){const x=$('observer-pitch-value');if(x){const angle=90-pitch();x.textContent=angle===0?'水平 0°':angle>0?'下向き '+angle+'°':'上向き '+(-angle)+'°';}}
 function hideMapLabels(map){
  hiddenLayers.clear();
  for(const id of ['old-municipal-labels','old-municipal-lines','old-municipal-fill','atlas-place-labels','atlas-poi-labels','atlas-poi-points']){
