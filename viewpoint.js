@@ -2,7 +2,7 @@
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);
-let selecting=false,point=null,marker=null,observer=false,terrainMap=null,revision=0,previousExaggeration=null;
+let selecting=false,point=null,marker=null,observer=false,terrainMap=null,revision=0,previousExaggeration=null,hiddenLayers=new Map();
 const LIMIT={south:35.15,north:37.07,west:137.24,east:138.94};
 function message(s){const el=$('observer-status');if(el)el.textContent=s;}
 function selectMode(active){
@@ -32,6 +32,21 @@ function pick(ll){
 }
 function heading(){return Number($('observer-direction').value);}
 function height(){return Number($('observer-height').value);}
+function pitch(){return Number($('observer-pitch')?.value||78);}
+function showPitch(){const x=$('observer-pitch-value');if(x)x.textContent=(90-pitch())+'°下向き';}
+function hideMapLabels(map){
+ hiddenLayers.clear();
+ for(const id of ['old-municipal-labels','old-municipal-lines','old-municipal-fill','atlas-place-labels','atlas-poi-labels','atlas-poi-points']){
+  if(!map.getLayer(id))continue;
+  const old=map.getLayoutProperty(id,'visibility')||'visible';
+  hiddenLayers.set(id,old);
+  map.setLayoutProperty(id,'visibility','none');
+ }
+}
+function restoreMapLabels(map){
+ for(const [id,visibility] of hiddenLayers)if(map?.getLayer(id))map.setLayoutProperty(id,'visibility',visibility);
+ hiddenLayers.clear();
+}
 function showHeading(){
  const dir=Math.round(heading());
  const name=['北','北東','東','南東','南','南西','西','北西'][Math.round(dir/45)%8];
@@ -57,7 +72,7 @@ async function applyView(resample=false){
  const token=++revision,map=terrainMap;
  message('選択地点の標高と周辺地形を読み込んでいます…');
  try{
-  let ground=Number($('observer-ground').dataset.elevation);
+  let ground=parseFloat($('observer-ground').dataset.elevation);
   if(resample||!Number.isFinite(ground))ground=await sampleHeight(map,point,token);
   if(token!==revision)return;
   $('observer-ground').dataset.elevation=String(ground);
@@ -68,12 +83,13 @@ async function applyView(resample=false){
    throw Error('このMapLibre版は地点指定カメラに対応していません');
   if(typeof map.setCenterClampedToGround==='function')map.setCenterClampedToGround(false);
   const options=map.calculateCameraOptionsFromCameraLngLatAltRotation(
-   [point.lng,point.lat],cameraHeight,heading(),83,0);
+   [point.lng,point.lat],cameraHeight,heading(),pitch(),0);
   map.jumpTo(options);
   observer=true;
+  document.body.classList.add('observer-active');
   $('observer-panel').hidden=false;
   $('observer-exit').disabled=false;
-  message('地上視点を表示中。方角を変えると周囲の山並みを見渡せます。');
+  message('方角と見下ろす角度を変更できます。地形のみの表示です。');
  }catch(error){
   if(token!==revision)return;
   observer=false;
@@ -98,6 +114,7 @@ async function startView(){
   }
   terrainMap=window.shinshuTerrain?.getMap?.();
   if(!terrainMap)throw Error('3D地図を取得できません');
+  hideMapLabels(terrainMap);
   $('observer-panel').hidden=false;
   $('observer-direction').value=String(heading());
   showHeading();
@@ -140,6 +157,7 @@ function setup(){
   showHeading();if(observer)applyView(false);
  });
  $('observer-height')?.addEventListener('change',()=>{if(observer)applyView(false);});
+ $('observer-pitch')?.addEventListener('input',()=>{showPitch();if(observer)applyView(false);});
  $('observer-north')?.addEventListener('click',()=>{$('observer-direction').value='0';showHeading();if(observer)applyView(false);});
  store.map.on('click',e=>pick(e.latlng));
  document.addEventListener('shinshu-terrain-deactivated',()=>{if(observer)endView();terrainMap=null;});
@@ -151,7 +169,7 @@ function setup(){
    showHeading();applyView(false);
   }
  });
- showHeading();
+ showHeading();showPitch();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
 })();
